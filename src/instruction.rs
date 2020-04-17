@@ -1,4 +1,6 @@
-pub enum Instruction<'a> {
-    LoadImm { dest: &'a str, imm: i32 },
-    Add { dest: &'a str, x: &'a str, y: &'a str }
+use crate::registers::Register;
+
+pub enum Instruction {
+    LoadImm { dest: &'static Register, imm: i32 },
+    Add { dest: &'static Register, x: &'static Register, y:&'static Register }
 }

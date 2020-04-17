@@ -1,8 +1,10 @@
 mod instruction;
 mod interpreter;
+mod registers;
 
 use instruction::Instruction;
 use interpreter::Interpreter;
+use registers::*;
 
 fn main() {
     // let prog = program! {
@@ -13,24 +15,24 @@ fn main() {
 
     let program = vec![
         Instruction::LoadImm {
-            dest: "$t1",
+            dest: &T1,
             imm: 5
         },
         Instruction::LoadImm {
-            dest: "$t2",
+            dest: &T2,
             imm: 7
         },
         Instruction::Add {
-            dest: "$t0",
-            x: "$t1",
-            y: "$t2",
+            dest: &T0,
+            x: &T1,
+            y: &T2,
         }
     ];
     let mut interpreter = Interpreter::new(program);
     interpreter.step();
-    assert_eq!(5, interpreter.get_register("$t1").unwrap());
+    assert_eq!(5, interpreter.get_register(&T1));
     interpreter.step();
-    assert_eq!(7, interpreter.get_register("$t2").unwrap());
+    assert_eq!(7, interpreter.get_register(&T2));
     interpreter.step();
-    assert_eq!(12, interpreter.get_register("$t0").unwrap());
+    assert_eq!(12, interpreter.get_register(&T0));
 }

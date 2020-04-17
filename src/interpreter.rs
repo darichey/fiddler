@@ -1,4 +1,5 @@
-use crate::instruction::Instruction;
+use crate::registers::Register;
+use super::Instruction;
 
 macro_rules! parse_registers {
     ($reg:expr) => {
@@ -10,36 +11,24 @@ macro_rules! parse_registers {
     };
 }
 
-static REGISTER_NAMES: &[&'static str] = &[
-    "$zero", "$at", "$v0", "$v1", "$a0", "$a1", "$a2", "$a3", "$t0", "$t1", "$t2", "$t3", "$t4",
-    "$t5", "$t6", "t7", "$s0", "$s1", "$s2", "$s3", "$s4", "$s5", "$s6", "$s7", "$t8", "$t9",
-    "$k0", "$k1", "$gp", "$sp", "$fp", "$ra",
-];
-
-pub struct Interpreter<'a> {
+pub struct Interpreter {
     registers: [i32; 32],
-    program: Vec<Instruction<'a>>,
+    program: Vec<Instruction>,
     pc: usize,
 }
 
-impl Interpreter<'_> {
+impl Interpreter {
     pub fn step(&mut self) {
         let next_ins = &self.program[self.pc];
         match next_ins {
             Instruction::Add { dest, x, y } => {
-                if let (Some(dest_reg), Some(x_reg), Some(y_reg)) = parse_registers!(dest, x, y) {
-                    self.registers[dest_reg] = self.registers[x_reg] + self.registers[y_reg];
-                    self.pc += 1;
-                } else {
-                    panic!("Error parsing Add");
-                }
+                self.registers[dest.ord as usize] = self.registers[x.ord as usize] + self.registers[y.ord as usize];
+                self.pc += 1;
             },
 
             Instruction::LoadImm { dest, imm } => {
-                if let Some(dest_reg) = parse_registers!(dest) {
-                    self.registers[dest_reg] = *imm;
-                    self.pc += 1;
-                }
+                self.registers[dest.ord as usize] = *imm;
+                self.pc += 1;
             }
         }
         
@@ -53,12 +42,7 @@ impl Interpreter<'_> {
         }
     }
 
-    pub fn get_register(&self, reg: &str) -> Option<i32> {
-        Interpreter::parse_register_idx(reg)
-            .and_then(|idx| self.registers.get(idx).cloned())
-    }
-
-    fn parse_register_idx(reg: &str) -> Option<usize> {
-        REGISTER_NAMES.iter().position(|&x| x == reg)
+    pub fn get_register(&self, reg: &Register) -> i32 {
+        self.registers[reg.ord as usize]
     }
 }
