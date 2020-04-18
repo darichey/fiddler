@@ -5,20 +5,24 @@ mod registers;
 
 use instruction::Instruction::*;
 use interpreter::Interpreter;
-use registers::*;
+use registers::Register::*;
 
 fn main() {
     let program = vec![
-        LoadImm { dest: &T1, imm: 5 },
-        StoreWord { from: &T1, address: 0 },
-
-        LoadImm { dest: &T2, imm: 7 },
-        LoadWord { dest: &T3, address: 0 },
-
+        LoadImm { dest: T1, imm: 5 },
+        StoreWord {
+            from: T1,
+            address: 0,
+        },
+        LoadImm { dest: T2, imm: 7 },
+        LoadWord {
+            dest: T3,
+            address: 0,
+        },
         Add {
-            dest: &T0,
-            x: &T2,
-            y: &T3,
+            dest: T0,
+            x: T2,
+            y: T3,
         },
     ];
 
