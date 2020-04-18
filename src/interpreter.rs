@@ -1,15 +1,5 @@
+use crate::instruction::Instruction;
 use crate::registers::Register;
-use super::Instruction;
-
-macro_rules! parse_registers {
-    ($reg:expr) => {
-        Interpreter::parse_register_idx($reg)
-    };
-
-    ( $( $reg:expr ),+ ) => {
-        ( $( Interpreter::parse_register_idx($reg) ),+ )
-    };
-}
 
 pub struct Interpreter {
     registers: [i32; 32],
@@ -22,16 +12,18 @@ impl Interpreter {
         let next_ins = &self.program[self.pc];
         match next_ins {
             Instruction::Add { dest, x, y } => {
-                self.registers[dest.ord as usize] = self.registers[x.ord as usize] + self.registers[y.ord as usize];
+                let res = self.registers[x.ord as usize] + self.registers[y.ord as usize];
+                self.registers[dest.ord as usize] = res;
+
                 self.pc += 1;
-            },
+            }
 
             Instruction::LoadImm { dest, imm } => {
                 self.registers[dest.ord as usize] = *imm;
+
                 self.pc += 1;
             }
         }
-        
     }
 
     pub fn new(program: Vec<Instruction>) -> Interpreter {
