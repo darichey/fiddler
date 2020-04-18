@@ -10,4 +10,12 @@ pub enum Instruction {
         x: &'static Register,
         y: &'static Register,
     },
+    LoadWord {
+        dest: &'static Register,
+        address: i32,
+    },
+    StoreWord {
+        from: &'static Register,
+        address: i32,
+    }
 }
