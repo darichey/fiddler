@@ -1,5 +1,6 @@
 mod instruction;
 mod interpreter;
+#[allow(dead_code)]
 mod registers;
 
 use instruction::Instruction::*;
