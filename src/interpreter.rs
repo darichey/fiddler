@@ -1,5 +1,7 @@
 use crate::instruction::Instruction;
 use crate::registers::{Register, Registers};
+use crate::service::Service;
+use std::convert::TryFrom;
 
 pub struct Interpreter<'a> {
     registers: Registers,
@@ -35,6 +37,22 @@ impl Interpreter<'_> {
                 self.memory[address as usize] = self.registers[from];
 
                 self.pc += 1;
+            }
+
+            Instruction::SysCall => {
+                let service = Service::try_from(self.registers[Register::V0]).expect("bad service");
+                self.exec_service(service);
+                
+                self.pc += 1;
+            }
+        }
+    }
+
+    fn exec_service(&self, service: Service) {
+        match service {
+            Service::PrintInt => {
+                let arg = self.registers[Register::A0];
+                println!("{}", arg);
             }
         }
     }

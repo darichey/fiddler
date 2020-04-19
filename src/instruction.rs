@@ -19,4 +19,5 @@ pub enum Instruction {
         from: Register,
         address: i32,
     },
+    SysCall
 }

@@ -2,6 +2,7 @@ mod instruction;
 mod interpreter;
 #[allow(dead_code)]
 mod registers;
+mod service;
 
 use instruction::Instruction::*;
 use interpreter::Interpreter;
@@ -20,10 +21,12 @@ fn main() {
             address: 0,
         },
         Add {
-            dest: T0,
+            dest: A0,
             x: T2,
             y: T3,
         },
+        LoadImm { dest: V0, imm: 1 },
+        SysCall
     ];
 
     let memory = &mut [0i32; 10];
@@ -38,5 +41,8 @@ fn main() {
     interpreter.step();
     assert_eq!(5, interpreter.get_register(&T3));
     interpreter.step();
-    assert_eq!(12, interpreter.get_register(&T0));
+    assert_eq!(12, interpreter.get_register(&A0));
+    interpreter.step();
+    assert_eq!(1, interpreter.get_register(&V0));
+    interpreter.step();
 }
