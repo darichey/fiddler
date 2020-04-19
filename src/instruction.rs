@@ -1,5 +1,6 @@
 use crate::registers::Register;
 
+#[derive(Copy, Clone)]
 pub enum Instruction {
     LoadImm {
         dest: Register,

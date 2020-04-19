@@ -10,29 +10,29 @@ pub struct Interpreter<'a> {
 
 impl Interpreter<'_> {
     pub fn step(&mut self) {
-        let next_ins = &self.program[self.pc];
+        let next_ins = self.program[self.pc];
         match next_ins {
             Instruction::Add { dest, x, y } => {
-                let res = self.registers[*x] + self.registers[*y];
-                self.registers[*dest] = res;
+                let res = self.registers[x] + self.registers[y];
+                self.registers[dest] = res;
 
                 self.pc += 1;
             }
 
             Instruction::LoadImm { dest, imm } => {
-                self.registers[*dest] = *imm;
+                self.registers[dest] = imm;
 
                 self.pc += 1;
             }
 
             Instruction::LoadWord { dest, address } => {
-                self.registers[*dest] = self.memory[*address as usize];
+                self.registers[dest] = self.memory[address as usize];
 
                 self.pc += 1;
             }
 
             Instruction::StoreWord { from, address } => {
-                self.memory[*address as usize] = self.registers[*from];
+                self.memory[address as usize] = self.registers[from];
 
                 self.pc += 1;
             }
