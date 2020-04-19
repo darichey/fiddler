@@ -1,7 +1,7 @@
 use std::convert::TryFrom;
 
 pub enum Service {
-    PrintInt = 1
+    PrintInt = 1,
 }
 
 impl TryFrom<i32> for Service {
@@ -10,7 +10,7 @@ impl TryFrom<i32> for Service {
     fn try_from(value: i32) -> Result<Self, Self::Error> {
         match value {
             1 => Ok(Service::PrintInt),
-            _ => Err("out of bounds")
+            _ => Err("out of bounds"),
         }
     }
 }

@@ -1,13 +1,14 @@
 use crate::instruction::Instruction;
+use crate::memory::Memory;
 use crate::registers::{Register, Registers};
 use crate::service::Service;
 use std::convert::TryFrom;
 
 pub struct Interpreter<'a> {
-    registers: Registers,
-    program: Vec<Instruction>,
-    pc: usize,
-    memory: &'a mut [i32],
+    pub registers: Registers,
+    pub program: Vec<Instruction>,
+    pub pc: usize,
+    pub memory: Memory<'a>,
 }
 
 impl Interpreter<'_> {
@@ -28,13 +29,13 @@ impl Interpreter<'_> {
             }
 
             Instruction::LoadWord { dest, address } => {
-                self.registers[dest] = self.memory[address as usize];
+                self.registers[dest] = self.memory.get_word(address);
 
                 self.pc += 1;
             }
 
             Instruction::StoreWord { from, address } => {
-                self.memory[address as usize] = self.registers[from];
+                self.memory.set_word(address, self.registers[from]);
 
                 self.pc += 1;
             }
@@ -42,7 +43,6 @@ impl Interpreter<'_> {
             Instruction::SysCall => {
                 let service = Service::try_from(self.registers[Register::V0]).expect("bad service");
                 self.exec_service(service);
-                
                 self.pc += 1;
             }
         }
@@ -57,20 +57,12 @@ impl Interpreter<'_> {
         }
     }
 
-    pub fn new<'a>(program: Vec<Instruction>, memory: &'a mut [i32]) -> Interpreter<'a> {
+    pub fn new<'a>(program: Vec<Instruction>, memory: Memory<'a>) -> Interpreter<'a> {
         Interpreter {
             registers: Registers::new(),
-            program: program,
+            program,
             pc: 0,
-            memory: memory,
+            memory,
         }
-    }
-
-    pub fn get_register(&self, reg: &Register) -> i32 {
-        self.registers[*reg]
-    }
-
-    pub fn get_memory(&self, address: i32) -> i32 {
-        self.memory[address as usize]
     }
 }

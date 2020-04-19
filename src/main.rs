@@ -1,11 +1,13 @@
 mod instruction;
 mod interpreter;
+mod memory;
 #[allow(dead_code)]
 mod registers;
 mod service;
 
 use instruction::Instruction::*;
 use interpreter::Interpreter;
+use memory::Memory;
 use registers::Register::*;
 
 fn main() {
@@ -26,23 +28,24 @@ fn main() {
             y: T3,
         },
         LoadImm { dest: V0, imm: 1 },
-        SysCall
+        SysCall,
     ];
 
-    let memory = &mut [0i32; 10];
+    let mem = &mut [0u8; 32];
+    let memory = Memory::new(mem);
 
     let mut interpreter = Interpreter::new(program, memory);
     interpreter.step();
-    assert_eq!(5, interpreter.get_register(&T1));
+    assert_eq!(5, interpreter.registers[T1]);
     interpreter.step();
-    assert_eq!(5, interpreter.get_memory(0));
+    assert_eq!(5, interpreter.memory.get_word(0));
     interpreter.step();
-    assert_eq!(7, interpreter.get_register(&T2));
+    assert_eq!(7, interpreter.registers[T2]);
     interpreter.step();
-    assert_eq!(5, interpreter.get_register(&T3));
+    assert_eq!(5, interpreter.registers[T3]);
     interpreter.step();
-    assert_eq!(12, interpreter.get_register(&A0));
+    assert_eq!(12, interpreter.registers[A0]);
     interpreter.step();
-    assert_eq!(1, interpreter.get_register(&V0));
+    assert_eq!(1, interpreter.registers[V0]);
     interpreter.step();
 }
