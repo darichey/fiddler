@@ -1,3 +1,4 @@
+use crate::address::Address;
 use crate::registers::Register;
 
 #[derive(Copy, Clone)]
@@ -12,12 +13,12 @@ pub enum Instruction {
         y: Register,
     },
     LoadWord {
-        dest: Register,
-        address: i32,
+        to: Register,
+        from: Address,
     },
     StoreWord {
         from: Register,
-        address: i32,
+        to: Address,
     },
     SysCall,
 }

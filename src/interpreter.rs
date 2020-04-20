@@ -1,3 +1,4 @@
+use crate::address::Address;
 use crate::instruction::Instruction;
 use crate::memory::Memory;
 use crate::registers::{Register, Registers};
@@ -28,14 +29,14 @@ impl Interpreter<'_> {
                 self.pc += 1;
             }
 
-            Instruction::LoadWord { dest, address } => {
-                self.registers[dest] = self.memory.get_word(address as usize);
+            Instruction::LoadWord { to, from } => {
+                self.registers[to] = self.memory.get_word(self.calculate_address(from));
 
                 self.pc += 1;
             }
 
-            Instruction::StoreWord { from, address } => {
-                self.memory.set_word(address as usize, self.registers[from]);
+            Instruction::StoreWord { from, to } => {
+                self.memory.set_word(self.calculate_address(to), self.registers[from]);
 
                 self.pc += 1;
             }
@@ -61,6 +62,10 @@ impl Interpreter<'_> {
                 println!("{}", string);
             }
         }
+    }
+
+    fn calculate_address(&self, address: Address) -> usize {
+        self.registers[address.base] as usize + address.offset
     }
 
     pub fn new<'a>(program: Vec<Instruction>, memory: Memory<'a>) -> Interpreter<'a> {

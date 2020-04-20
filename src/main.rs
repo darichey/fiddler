@@ -1,3 +1,4 @@
+mod address;
 mod instruction;
 mod interpreter;
 mod memory;
@@ -5,6 +6,7 @@ mod memory;
 mod registers;
 mod service;
 
+use address::Address;
 use instruction::Instruction::*;
 use interpreter::Interpreter;
 use memory::Memory;
@@ -13,14 +15,15 @@ use registers::Register::*;
 fn main() {
     let program = vec![
         LoadImm { dest: T1, imm: 5 },
+        LoadImm { dest: T4, imm: 0 },
         StoreWord {
             from: T1,
-            address: 0,
+            to: Address { base: T4, offset: 0 },
         },
         LoadImm { dest: T2, imm: 7 },
         LoadWord {
-            dest: T3,
-            address: 0,
+            to: T3,
+            from: Address { base: T4, offset: 0 },
         },
         Add {
             dest: A0,
@@ -45,6 +48,8 @@ fn main() {
 
     interpreter.step();
     assert_eq!(5, interpreter.registers[T1]);
+    interpreter.step();
+    assert_eq!(0, interpreter.registers[T4]);
     interpreter.step();
     assert_eq!(5, interpreter.memory.get_word(0));
     interpreter.step();
