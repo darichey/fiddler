@@ -4,15 +4,17 @@ use crate::memory::Memory;
 use crate::registers::{Register, Registers};
 use crate::service::Service;
 use std::convert::TryFrom;
+use std::io::Write;
 
-pub struct Interpreter<'a> {
+pub struct Interpreter<'a, W: Write> {
     pub registers: Registers,
     pub program: Vec<Instruction>,
     pub pc: usize,
     pub memory: Memory<'a>,
+    output: W,
 }
 
-impl Interpreter<'_> {
+impl<W: Write> Interpreter<'_, W> {
     pub fn step(&mut self) {
         let next_ins = self.program[self.pc];
         match next_ins {
@@ -49,17 +51,17 @@ impl Interpreter<'_> {
         }
     }
 
-    fn exec_service(&self, service: Service) {
+    fn exec_service(&mut self, service: Service) {
         match service {
             Service::PrintInt => {
                 let arg = self.registers[Register::A0];
-                println!("{}", arg);
+                write!(self.output, "{}", arg).unwrap();
             }
 
             Service::PrintString => {
                 let address = self.registers[Register::A0];
                 let string = self.memory.get_string(address as usize);
-                println!("{}", string);
+                write!(self.output, "{}", string).unwrap();
             }
         }
     }
@@ -68,12 +70,13 @@ impl Interpreter<'_> {
         self.registers[address.base] as usize + address.offset
     }
 
-    pub fn new<'a>(program: Vec<Instruction>, memory: Memory<'a>) -> Interpreter<'a> {
+    pub fn new<'a>(program: Vec<Instruction>, memory: Memory<'a>, output: W) -> Interpreter<'a, W> {
         Interpreter {
             registers: Registers::new(),
             program,
             pc: 0,
             memory,
+            output,
         }
     }
 }

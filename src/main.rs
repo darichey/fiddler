@@ -11,6 +11,7 @@ use instruction::Instruction::*;
 use interpreter::Interpreter;
 use memory::Memory;
 use registers::Register::*;
+use std::io::Cursor;
 
 fn main() {
     let program = vec![
@@ -44,7 +45,9 @@ fn main() {
     // string happens to be "null terminated" because the default value in the array is 0
     memory.set_string(5, "hello world"); 
 
-    let mut interpreter = Interpreter::new(program, memory);
+    let mut output = [0u8; 13];
+    let cursor = Cursor::new(&mut output[..]);
+    let mut interpreter = Interpreter::new(program, memory, cursor);
 
     interpreter.step();
     assert_eq!(5, interpreter.registers[T1]);
@@ -65,4 +68,6 @@ fn main() {
     interpreter.step();
     interpreter.step();
     interpreter.step();
+
+    assert_eq!(&output[..], b"12hello world");
 }
