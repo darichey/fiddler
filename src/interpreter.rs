@@ -29,13 +29,13 @@ impl Interpreter<'_> {
             }
 
             Instruction::LoadWord { dest, address } => {
-                self.registers[dest] = self.memory.get_word(address);
+                self.registers[dest] = self.memory.get_word(address as usize);
 
                 self.pc += 1;
             }
 
             Instruction::StoreWord { from, address } => {
-                self.memory.set_word(address, self.registers[from]);
+                self.memory.set_word(address as usize, self.registers[from]);
 
                 self.pc += 1;
             }
@@ -53,6 +53,12 @@ impl Interpreter<'_> {
             Service::PrintInt => {
                 let arg = self.registers[Register::A0];
                 println!("{}", arg);
+            }
+
+            Service::PrintString => {
+                let address = self.registers[Register::A0];
+                let string = self.memory.get_string(address as usize);
+                println!("{}", string);
             }
         }
     }

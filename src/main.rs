@@ -29,12 +29,20 @@ fn main() {
         },
         LoadImm { dest: V0, imm: 1 },
         SysCall,
+
+        LoadImm { dest: V0, imm: 4 },
+        LoadImm { dest: A0, imm: 5 },
+        SysCall,
     ];
 
     let mem = &mut [0u8; 32];
-    let memory = Memory::new(mem);
+    let mut memory = Memory::new(mem);
+
+    // string happens to be "null terminated" because the default value in the array is 0
+    memory.set_string(5, "hello world"); 
 
     let mut interpreter = Interpreter::new(program, memory);
+
     interpreter.step();
     assert_eq!(5, interpreter.registers[T1]);
     interpreter.step();
@@ -47,5 +55,9 @@ fn main() {
     assert_eq!(12, interpreter.registers[A0]);
     interpreter.step();
     assert_eq!(1, interpreter.registers[V0]);
+    interpreter.step();
+
+    interpreter.step();
+    interpreter.step();
     interpreter.step();
 }
