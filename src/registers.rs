@@ -61,3 +61,16 @@ impl IndexMut<Register> for Registers {
         &mut self.underlying[index as usize]
     }
 }
+
+#[macro_export]
+macro_rules! default_registers {
+    ( $($key:expr => $value:expr ),+ ) => {
+        {
+            let mut registers = Registers::new();
+            $(
+                registers[$key] = $value;
+            )+
+            registers
+        }
+    };
+}

@@ -9,6 +9,12 @@ impl Memory<'_> {
         Memory { underlying }
     }
 
+    pub fn new_empty() -> Memory<'static> {
+        Memory {
+            underlying: &mut [0; 0],
+        }
+    }
+
     pub fn get_word(&self, address: usize) -> i32 {
         i32::from_ne_bytes([
             self.underlying[address + 0],
@@ -28,7 +34,7 @@ impl Memory<'_> {
 
     pub fn get_string(&self, address: usize) -> &str {
         let mut end = address;
-        while self.underlying[end] != 0 {
+        while end < self.underlying.len() && self.underlying[end] != 0 {
             end += 1;
         }
         let bytes = &self.underlying[address .. end];

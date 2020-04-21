@@ -7,14 +7,20 @@ use std::convert::TryFrom;
 use std::io::Write;
 
 pub struct Interpreter<'a, W: Write> {
-    pub registers: Registers,
     pub program: Vec<Instruction>,
-    pub pc: usize,
+    pub registers: Registers,
     pub memory: Memory<'a>,
     output: W,
+    pc: usize,
 }
 
 impl<W: Write> Interpreter<'_, W> {
+    pub fn run(&mut self) {
+        while self.pc < self.program.len() {
+            self.step();
+        }
+    }
+
     pub fn step(&mut self) {
         let next_ins = self.program[self.pc];
         match next_ins {
@@ -70,13 +76,13 @@ impl<W: Write> Interpreter<'_, W> {
         self.registers[address.base] as usize + address.offset
     }
 
-    pub fn new<'a>(program: Vec<Instruction>, memory: Memory<'a>, output: W) -> Interpreter<'a, W> {
+    pub fn new<'a>(program: Vec<Instruction>, registers: Registers, memory: Memory<'a>, output: W) -> Interpreter<'a, W> {
         Interpreter {
-            registers: Registers::new(),
             program,
-            pc: 0,
+            registers,
             memory,
             output,
+            pc: 0,
         }
     }
 }
