@@ -10,7 +10,8 @@ use std::io::{self, Cursor};
 #[test]
 fn test_load_imm() {
     let program = vec![LoadImm { dest: T0, imm: 5 }];
-    let mut interpreter = Interpreter::new(program, Registers::new(), Memory::new_empty(), io::sink());
+    let mut interpreter =
+        Interpreter::new(program, Registers::new(), Memory::new_empty(), io::sink());
 
     interpreter.run();
 
@@ -43,7 +44,6 @@ fn test_load_word() {
     }];
 
     let registers = default_registers!(T1 => 0);
-    
     let buf = &mut [0u8; 4];
     let mut memory = Memory::new(buf);
     memory.set_word(0, 0x1234);
@@ -61,12 +61,11 @@ fn test_store_word() {
         from: T0,
         to: Address {
             base: T1,
-            offset: 0
-        }
+            offset: 0,
+        },
     }];
 
     let registers = default_registers!(T0 => 0x1234, T1 => 0);
-    
     let buf = &mut [0u8; 4];
     let memory = Memory::new(buf);
 

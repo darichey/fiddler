@@ -44,7 +44,8 @@ impl<W: Write> Interpreter<'_, W> {
             }
 
             Instruction::StoreWord { from, to } => {
-                self.memory.set_word(self.calculate_address(to), self.registers[from]);
+                self.memory
+                    .set_word(self.calculate_address(to), self.registers[from]);
 
                 self.pc += 1;
             }
@@ -76,7 +77,12 @@ impl<W: Write> Interpreter<'_, W> {
         self.registers[address.base] as usize + address.offset
     }
 
-    pub fn new<'a>(program: Vec<Instruction>, registers: Registers, memory: Memory<'a>, output: W) -> Interpreter<'a, W> {
+    pub fn new<'a>(
+        program: Vec<Instruction>,
+        registers: Registers,
+        memory: Memory<'a>,
+        output: W,
+    ) -> Interpreter<'a, W> {
         Interpreter {
             program,
             registers,

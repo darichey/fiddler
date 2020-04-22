@@ -37,14 +37,14 @@ impl Memory<'_> {
         while end < self.underlying.len() && self.underlying[end] != 0 {
             end += 1;
         }
-        let bytes = &self.underlying[address .. end];
+        let bytes = &self.underlying[address..end];
         str::from_utf8(bytes).unwrap()
     }
 
     pub fn set_string(&mut self, address: usize, string: &str) {
         let bytes = string.as_bytes();
         for i in 0..string.len() {
-            self.underlying[address + i] = bytes[i]; 
+            self.underlying[address + i] = bytes[i];
         }
     }
 }
