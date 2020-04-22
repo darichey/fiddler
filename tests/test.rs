@@ -15,7 +15,7 @@ fn test_load_imm() {
 
     interpreter.run();
 
-    assert_eq!(5, interpreter.registers[T0]);
+    assert_eq!(5, interpreter.registers.get(T0));
 }
 
 #[test]
@@ -30,7 +30,7 @@ fn test_add() {
 
     interpreter.run();
 
-    assert_eq!(6, interpreter.registers[T2]);
+    assert_eq!(6, interpreter.registers.get(T2));
 }
 
 #[test]
@@ -52,7 +52,7 @@ fn test_load_word() {
 
     interpreter.run();
 
-    assert_eq!(0x1234, interpreter.registers[T0]);
+    assert_eq!(0x1234, interpreter.registers.get(T0));
 }
 
 #[test]

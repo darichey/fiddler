@@ -1,6 +1,4 @@
-use std::ops::{Index, IndexMut};
-
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum Register {
     ZERO,
     AT,
@@ -46,19 +44,15 @@ impl Registers {
             underlying: [0; 32],
         }
     }
-}
 
-impl Index<Register> for Registers {
-    type Output = i32;
-
-    fn index(&self, index: Register) -> &Self::Output {
-        &self.underlying[index as usize]
+    pub fn get(&self, register: Register) -> i32 {
+        self.underlying[register as usize]
     }
-}
 
-impl IndexMut<Register> for Registers {
-    fn index_mut(&mut self, index: Register) -> &mut Self::Output {
-        &mut self.underlying[index as usize]
+    pub fn set(&mut self, register: Register, x: i32) {
+        if register != Register::ZERO {
+            self.underlying[register as usize] = x;
+        }
     }
 }
 
@@ -68,7 +62,7 @@ macro_rules! default_registers {
         {
             let mut registers = Registers::new();
             $(
-                registers[$key] = $value;
+                registers.set($key, $value);
             )+
             registers
         }

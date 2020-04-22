@@ -25,33 +25,33 @@ impl<W: Write> Interpreter<'_, W> {
         let next_ins = self.program[self.pc];
         match next_ins {
             Instruction::Add { dest, x, y } => {
-                let res = self.registers[x] + self.registers[y];
-                self.registers[dest] = res;
+                let res = self.registers.get(x) + self.registers.get(y);
+                self.registers.set(dest, res);
 
                 self.pc += 1;
             }
 
             Instruction::LoadImm { dest, imm } => {
-                self.registers[dest] = imm;
+                self.registers.set(dest, imm);
 
                 self.pc += 1;
             }
 
             Instruction::LoadWord { to, from } => {
-                self.registers[to] = self.memory.get_word(self.calculate_address(from));
+                self.registers.set(to, self.memory.get_word(self.calculate_address(from)));
 
                 self.pc += 1;
             }
 
             Instruction::StoreWord { from, to } => {
                 self.memory
-                    .set_word(self.calculate_address(to), self.registers[from]);
+                    .set_word(self.calculate_address(to), self.registers.get(from));
 
                 self.pc += 1;
             }
 
             Instruction::SysCall => {
-                let service = Service::try_from(self.registers[Register::V0]).expect("bad service");
+                let service = Service::try_from(self.registers.get(Register::V0)).expect("bad service");
                 self.exec_service(service);
                 self.pc += 1;
             }
@@ -61,12 +61,12 @@ impl<W: Write> Interpreter<'_, W> {
     fn exec_service(&mut self, service: Service) {
         match service {
             Service::PrintInt => {
-                let arg = self.registers[Register::A0];
+                let arg = self.registers.get(Register::A0);
                 write!(self.output, "{}", arg).unwrap();
             }
 
             Service::PrintString => {
-                let address = self.registers[Register::A0];
+                let address = self.registers.get(Register::A0);
                 let string = self.memory.get_string(address as usize);
                 write!(self.output, "{}", string).unwrap();
             }
@@ -74,7 +74,7 @@ impl<W: Write> Interpreter<'_, W> {
     }
 
     fn calculate_address(&self, address: Address) -> usize {
-        self.registers[address.base] as usize + address.offset
+        self.registers.get(address.base) as usize + address.offset
     }
 
     pub fn new<'a>(
